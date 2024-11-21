@@ -1,60 +1,60 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue';
 
 interface TimeLineProps {
-  startYear: number
-  endYear: number
+  startYear: number;
+  endYear: number;
 }
 
-const props = defineProps<TimeLineProps>()
+const props = defineProps<TimeLineProps>();
 const emit = defineEmits<{
-  (e: 'select', year: number): void
-}>()
+  (e: 'select', year: number): void;
+}>();
 
-const timelineRef = ref<HTMLDivElement>()
-const isDragging = ref(false)
-const startX = ref(0)
-const scrollLeft = ref(0)
-const selectedYear = ref<number | null>(null)
+const timelineRef = ref<HTMLDivElement>();
+const isDragging = ref(false);
+const startX = ref(0);
+const scrollLeft = ref(0);
+const selectedYear = ref<number | null>(null);
 
 const years = computed(() => {
-  const result = []
+  const result = [];
   for (let year = props.startYear; year <= props.endYear; year++) {
-    result.push(year)
+    result.push(year);
   }
-  return result
-})
+  return result;
+});
 
 const handleMouseDown = (e: MouseEvent) => {
-  isDragging.value = true
-  startX.value = e.pageX - timelineRef.value!.offsetLeft
-  scrollLeft.value = timelineRef.value!.scrollLeft
-}
+  isDragging.value = true;
+  startX.value = e.pageX - timelineRef.value!.offsetLeft;
+  scrollLeft.value = timelineRef.value!.scrollLeft;
+};
 
 const handleMouseMove = (e: MouseEvent) => {
-  if (!isDragging.value) return
-  
-  const x = e.pageX - timelineRef.value!.offsetLeft
-  const walk = (x - startX.value) * 2
-  timelineRef.value!.scrollLeft = scrollLeft.value - walk
-}
+  if (!isDragging.value) return;
+
+  const x = e.pageX - timelineRef.value!.offsetLeft;
+  const walk = (x - startX.value) * 2;
+  timelineRef.value!.scrollLeft = scrollLeft.value - walk;
+};
 
 const handleMouseUp = () => {
-  isDragging.value = false
-}
+  isDragging.value = false;
+};
 
 const selectYear = (year: number) => {
-  selectedYear.value = year
-  emit('select', year)
-}
+  selectedYear.value = year;
+  emit('select', year);
+};
 
 onMounted(() => {
-  timelineRef.value?.addEventListener('mouseleave', handleMouseUp)
-})
+  timelineRef.value?.addEventListener('mouseleave', handleMouseUp);
+});
 </script>
 
 <template>
-  <div 
+  <div
     ref="timelineRef"
     class="timeline-container"
     @mousedown="handleMouseDown"
@@ -63,11 +63,11 @@ onMounted(() => {
   >
     <div class="timeline">
       <div class="timeline-line"></div>
-      <div 
-        v-for="year in years" 
+      <div
+        v-for="year in years"
         :key="year"
         class="year-item"
-        :class="{ 'selected': selectedYear === year }"
+        :class="{ selected: selectedYear === year }"
         @click="selectYear(year)"
       >
         <div class="year-mark"></div>
@@ -120,7 +120,7 @@ onMounted(() => {
 
 .timeline-line {
   position: absolute;
-  top: 6px;
+  top: 8px;
   left: 0;
   right: 0;
   height: 2px;
@@ -137,8 +137,8 @@ onMounted(() => {
 }
 
 .year-mark {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background-color: var(--timeline-dot-bg);
   border: 2px solid var(--timeline-dot-border);
@@ -146,7 +146,8 @@ onMounted(() => {
   position: relative;
   z-index: 1;
   transition: all 0.3s ease;
-  transform: translateY(0);
+  transform: scale(0.75);
+  box-sizing: border-box;
 }
 
 .year-label {
@@ -159,17 +160,15 @@ onMounted(() => {
 }
 
 .year-item:hover .year-mark {
-  transform: scale(1.2);
+  transform: scale(0.9);
 }
 
 .year-item.selected .year-mark {
-  width: 16px;
-  height: 16px;
-  transform: translateY(-2px);
+  transform: scale(1);
 }
 
 .year-item.selected .year-label {
   color: var(--timeline-selected-color);
   font-weight: bold;
 }
-</style> 
+</style>
